@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examen - Obstetricia C.E.E.R.N</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* PANTALLA DE INICIO */
+    .start-screen {
+      text-align: center;
+    }
+
+    .start-screen h1 {
+      color: #667eea;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .start-screen p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .exam-info {
+      background: #f0f4ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 4px solid #667eea;
+    }
+
+    .exam-info ul {
+      text-align: left;
+      list-style: none;
+      display: inline-block;
+    }
+
+    .exam-info li {
+      margin: 10px 0;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .exam-info li:before {
+      content: "✓ ";
+      color: #667eea;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 50px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* PANTALLA DE EXAMEN */
+    .exam-screen {
+      display: none;
+    }
+
+    .progress-bar {
+      background: #e0e0e0;
+      height: 8px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .question-number {
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #764ba2;
+    }
+
+    .timer.warning {
+      color: #ff6b6b;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .options-container {
+      display: grid;
+      gap: 15px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: left;
+      transition: all 0.3s ease;
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .option:before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid #667eea;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .option:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .option.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .option.selected:before {
+      background: #667eea;
+      box-shadow: inset 0 0 0 3px white;
+    }
+
+    .option.correct {
+      border-color: #51cf66;
+      background: #f1fdf4;
+    }
+
+    .option.correct:before {
+      border-color: #51cf66;
+      background: #51cf66;
+      box-shadow: inset 0 0 0 3px white;
+    }
+
+    .option.wrong {
+      border-color: #ff6b6b;
+      background: #ffe0e0;
+    }
+
+    .option.wrong:before {
+      border-color: #ff6b6b;
+      background: #ff6b6b;
+      box-shadow: inset 0 0 0 3px white;
+    }
+
+    .option:disabled {
+      cursor: not-allowed;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* PANTALLA DE RESULTADOS */
+    .results-screen {
+      display: none;
+      text-align: center;
+    }
+
+    .results-screen h1 {
+      color: #667eea;
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    .score-circle {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .score-text {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .percentage {
+      font-size: 2.5rem;
+      color: #667eea;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .result-details {
+      background: #f0f4ff;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 4px solid #667eea;
+    }
+
+    .result-details p {
+      font-size: 1.1rem;
+      color: #333;
+      margin: 10px 0;
+    }
+
+    .result-details strong {
+      color: #667eea;
+    }
+
+    .btn-restart {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 50px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-restart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .feedback {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      color: #856404;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+
+    .feedback.wrong {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .start-screen h1 {
+        font-size: 1.8rem;
+      }
+
+      .question-text {
+        font-size: 1.1rem;
+      }
+
+      .option {
+        padding: 14px;
+        padding-left: 45px;
+      }
+
+      .option:before {
+        width: 18px;
+        height: 18px;
+      }
+
+      .score-circle {
+        width: 150px;
+        height: 150px;
+        font-size: 2.5rem;
+      }
+
+      .percentage {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- PANTALLA DE INICIO -->
+    <div class="start-screen" id="startScreen">
+      <h1>📋 Examen Obstetricia</h1>
+      <p>Simulacro Parcial C.E.E.R.N</p>
+      
+      <div class="exam-info">
+        <ul>
+          <li>Total de preguntas: <strong>32</strong></li>
+          <li>Tipo de preguntas: <strong>Opción múltiple</strong></li>
+          <li>Tiempo disponible: <strong>Sin límite</strong></li>
+          <li>Puedes revisar tus respuestas antes de enviar</li>
+        </ul>
+      </div>
+
+      <button class="start-btn" onclick="startExam()">Iniciar Examen</button>
+    </div>
+
+    <!-- PANTALLA DE EXAMEN -->
+    <div class="exam-screen" id="examScreen">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="question-header">
+        <span class="question-number" id="questionNumber"></span>
+        <div class="timer" id="timer">
+          <span>⏱️</span>
+          <span id="timeDisplay">00:00</span>
+        </div>
+      </div>
+
+      <div class="question-text" id="questionText"></div>
+
+      <div class="options-container" id="optionsContainer"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="button-group">
+        <button class="btn btn-submit" id="submitBtn" onclick="submitAnswer()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE RESULTADOS -->
+    <div class="results-screen" id="resultsScreen">
+      <h1>✅ Examen Finalizado</h1>
+      
+      <div class="score-circle" id="scoreCircle"></div>
+      
+      <div class="percentage" id="percentageDisplay"></div>
+      
+      <div class="result-details">
+        <p>Has respondido correctamente <strong id="correctCount"></strong> de <strong id="totalCount"></strong> preguntas</p>
+        <p id="resultMessage"></p>
+      </div>
+
+      <button class="btn-restart" onclick="location.reload()">Realizar nuevo examen</button>
+    </div>
+  </div>
+
+  <script>
+    // BASE DE PREGUNTAS
+    const questions = [
+      {
+        question: "¿Qué significa MSCF?",
+        options: ["Modelo Sanitario Clínico Federal", "Maternidad Segura y Centrada en la Familia", "Manejo Seguro del Control Fetal", "Maternidad Social Comunitaria Federal"],
+        answer: "Maternidad Segura y Centrada en la Familia"
+      },
+      {
+        question: "¿Qué hormona detectan los test de embarazo?",
+        options: ["Progesterona", "Estrógeno", "hCG", "Oxitocina"],
+        answer: "hCG"
+      },
+      {
+        question: "¿Qué caracteriza a la preeclampsia?",
+        options: ["Hipotensión", "Hipertensión y proteinuria", "Hiperglucemia", "Fiebre"],
+        answer: "Hipertensión y proteinuria"
+      },
+      {
+        question: "¿Qué droga se utiliza para prevenir convulsiones eclámpticas?",
+        options: ["Penicilina", "Sulfato de magnesio", "Ibuprofeno", "Insulina"],
+        answer: "Sulfato de magnesio"
+      },
+      {
+        question: "¿Qué bacteria es la causa más frecuente de ITU?",
+        options: ["Escherichia coli", "Candida", "Clostridium", "Staphylococcus epidermidis"],
+        answer: "Escherichia coli"
+      },
+      {
+        question: "¿Entre qué semanas aparece la diabetes gestacional?",
+        options: ["8-12", "14-18", "24-28", "35-40"],
+        answer: "24-28"
+      },
+      {
+        question: "¿Qué glucocorticoide se usa para maduración pulmonar fetal?",
+        options: ["Paracetamol", "Betametasona", "Metformina", "Omeprazol"],
+        answer: "Betametasona"
+      },
+      {
+        question: "¿Qué define hipertensión en el embarazo?",
+        options: ["100/60", "120/80", "140/90 o más", "130/70"],
+        answer: "140/90 o más"
+      },
+      {
+        question: "¿Cuál es un signo de APP?",
+        options: ["Convulsiones", "Contracciones cada 10 minutos", "Hipoglucemia", "Hipotermia"],
+        answer: "Contracciones cada 10 minutos"
+      },
+      {
+        question: "¿Qué procedimiento se realiza en incompetencia cervical?",
+        options: ["Legrado", "Cerclaje cervical", "Cesárea", "Amniocentesis"],
+        answer: "Cerclaje cervical"
+      },
+      {
+        question: "¿Qué significa HELLP?",
+        options: ["Hemólisis, enzimas hepáticas elevadas y plaquetas bajas", "Hipertensión y leucocitosis", "Hipoglucemia severa", "Hemorragia pulmonar"],
+        answer: "Hemólisis, enzimas hepáticas elevadas y plaquetas bajas"
+      },
+      {
+        question: "¿Qué síntoma es típico de cistitis?",
+        options: ["Disuria", "Convulsiones", "Disfagia", "Hemoptisis"],
+        answer: "Disuria"
+      },
+      {
+        question: "¿Qué maniobras permiten identificar la presentación fetal?",
+        options: ["Babinski", "Leopold", "McBurney", "Homan"],
+        answer: "Leopold"
+      },
+      {
+        question: "¿Qué vitamina se recomienda durante el embarazo?",
+        options: ["Vitamina K", "Vitamina D", "Ácido fólico", "Vitamina A"],
+        answer: "Ácido fólico"
+      },
+      {
+        question: "¿Qué complicación presenta convulsiones?",
+        options: ["Placenta previa", "Eclampsia", "Cistitis", "Diabetes gestacional"],
+        answer: "Eclampsia"
+      },
+      {
+        question: "¿Qué ocurre con el hematocrito durante el embarazo?",
+        options: ["Aumenta", "Desciende por hemodilución", "No cambia", "Desaparece"],
+        answer: "Desciende por hemodilución"
+      },
+      {
+        question: "¿Qué infección puede desencadenar nacimiento pretérmino?",
+        options: ["Conjuntivitis", "Corioamnionitis", "Otitis", "Gastritis"],
+        answer: "Corioamnionitis"
+      },
+      {
+        question: "¿Qué órgano produce la insulina?",
+        options: ["Riñón", "Páncreas", "Hígado", "Hipófisis"],
+        answer: "Páncreas"
+      },
+      {
+        question: "¿Qué hormona disminuye el tono ureteral durante el embarazo?",
+        options: ["Prolactina", "Progesterona", "Estrógeno", "Oxitocina"],
+        answer: "Progesterona"
+      },
+      {
+        question: "¿Qué define la hipertensión gestacional?",
+        options: ["Hipotensión luego de 20 semanas", "HTA después de las 20 semanas", "Convulsiones", "Proteinuria aislada"],
+        answer: "HTA después de las 20 semanas"
+      },
+      {
+        question: "¿Qué antídoto se utiliza para intoxicación por sulfato de magnesio?",
+        options: ["Potasio", "Gluconato de calcio", "Insulina", "Vitamina K"],
+        answer: "Gluconato de calcio"
+      },
+      {
+        question: "¿Qué valor de proteinuria define preeclampsia?",
+        options: ["50 mg", "100 mg", "300 mg o más", "10 mg"],
+        answer: "300 mg o más"
+      },
+      {
+        question: "¿Qué ocurre con el pH urinario durante el embarazo?",
+        options: ["Se acidifica", "Se alcaliniza", "No cambia", "Desaparece"],
+        answer: "Se alcaliniza"
+      },
+      {
+        question: "¿Qué bacteria puede transmitirse al feto durante el parto?",
+        options: ["Proteus", "Estreptococo agalactiae", "Rotavirus", "Candida"],
+        answer: "Estreptococo agalactiae"
+      },
+      {
+        question: "¿Cuál es la principal función del surfactante pulmonar?",
+        options: ["Producir glucosa", "Disminuir tensión superficial alveolar", "Aumentar presión", "Formar líquido amniótico"],
+        answer: "Disminuir tensión superficial alveolar"
+      },
+      {
+        question: "¿Qué examen confirma con mayor precisión la edad gestacional?",
+        options: ["Radiografía", "Ecografía precoz", "Proteinuria", "ECG"],
+        answer: "Ecografía precoz"
+      },
+      {
+        question: "¿Qué lado presenta mayor dilatación ureteral?",
+        options: ["Izquierdo", "Derecho", "Ambos", "Ninguno"],
+        answer: "Derecho"
+      },
+      {
+        question: "¿Qué complicación fetal puede producir la diabetes gestacional?",
+        options: ["Macrosomía", "Microcefalia", "Hipotiroidismo", "Sordera"],
+        answer: "Macrosomía"
+      },
+      {
+        question: "¿Qué signo visual puede aparecer en preeclampsia grave?",
+        options: ["Escotomas centelleantes", "Miopía", "Astigmatismo", "Cataratas"],
+        answer: "Escotomas centelleantes"
+      },
+      {
+        question: "¿Qué maniobra evalúa si la cabeza fetal está encajada?",
+        options: ["Leopold", "Babinski", "Homan", "McDonald"],
+        answer: "Leopold"
+      },
+      {
+        question: "¿Qué infección urinaria afecta el parénquima renal?",
+        options: ["Cistitis", "Pielonefritis", "Uretritis", "Vaginosis"],
+        answer: "Pielonefritis"
+      },
+      {
+        question: "¿Qué síntoma digestivo es frecuente durante el embarazo?",
+        options: ["Hematemesis", "Náuseas matutinas", "Melena", "Disfagia"],
+        answer: "Náuseas matutinas"
+      }
+    ];
+
+    // VARIABLES DE CONTROL
+    let currentQuestion = 0;
+    let answers = [];
+    let startTime = 0;
+    let timerInterval = null;
+
+    // FUNCIONES PRINCIPALES
+    function startExam() {
+      answers = new Array(questions.length).fill(null);
+      currentQuestion = 0;
+      startTime = Date.now();
+      
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('examScreen').style.display = 'block';
+      
+      loadQuestion();
+      startTimer();
+    }
+
+    function loadQuestion() {
+      const question = questions[currentQuestion];
+      
+      // Actualizar número de pregunta
+      document.getElementById('questionNumber').textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+      
+      // Actualizar barra de progreso
+      const progress = ((currentQuestion + 1) / questions.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      
+      // Mostrar pregunta
+      document.getElementById('questionText').textContent = question.question;
+      
+      // Mezclar opciones
+      const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+      
+      // Renderizar opciones
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = option;
+        
+        if (answers[currentQuestion] === option) {
+          btn.classList.add('selected');
+        }
+        
+        btn.onclick = () => selectOption(btn, option);
+        optionsContainer.appendChild(btn);
+      });
+      
+      // Ocultar feedback
+      document.getElementById('feedback').classList.remove('show', 'correct', 'wrong');
+    }
+
+    function selectOption(btn, option) {
+      // Remover selección anterior
+      document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+      
+      // Agregar selección nueva
+      btn.classList.add('selected');
+      answers[currentQuestion] = option;
+    }
+
+    function submitAnswer() {
+      if (answers[currentQuestion] === null) {
+        alert('Por favor selecciona una respuesta');
+        return;
+      }
+      
+      currentQuestion++;
+      
+      if (currentQuestion >= questions.length) {
+        endExam();
+      } else {
+        loadQuestion();
+      }
+    }
+
+    function endExam() {
+      clearInterval(timerInterval);
+      
+      // Calcular resultados
+      let correctCount = 0;
+      answers.forEach((answer, index) => {
+        if (answer === questions[index].answer) {
+          correctCount++;
+        }
+      });
+      
+      const percentage = Math.round((correctCount / questions.length) * 100);
+      
+      // Mostrar resultados
+      document.getElementById('examScreen').style.display = 'none';
+      document.getElementById('resultsScreen').style.display = 'block';
+      
+      document.getElementById('scoreCircle').textContent = correctCount + '/' + questions.length;
+      document.getElementById('percentageDisplay').textContent = percentage + '%';
+      document.getElementById('correctCount').textContent = correctCount;
+      document.getElementById('totalCount').textContent = questions.length;
+      
+      // Mensaje personalizado
+      let message = '';
+      if (percentage >= 90) {
+        message = '¡Excelente desempeño! Dominas el tema.';
+      } else if (percentage >= 75) {
+        message = 'Buen trabajo. Repasa los temas donde tuviste dudas.';
+      } else if (percentage >= 60) {
+        message = 'Debes estudiar más. Enfócate en los temas débiles.';
+      } else {
+        message = 'Requieres mayor preparación. Estudia el material con cuidado.';
+      }
+      
+      document.getElementById('resultMessage').textContent = message;
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        
+        document.getElementById('timeDisplay').textContent = 
+          String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
